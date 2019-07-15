@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title></title>
+</head>
+<body>
+
+	<h2> {{ question.question_text }} </h2>
+	{% if error_message %} <p> <strong> {{ error_message }} </strong> </p> {% endif %}
+	<form action = "{% url 'polls:vote' question.id %}" method = "post">
+		{% csrf_token %}
+		{% for choice in question.choice_set.all %}
+			<input type = "radio" name = "choice" id = "choice{{ forloop.counter }}" value = "{{ choice.id }}">
+			<label for = "choice{{ forloop.counter }}"> {{ choice.choice_text }} </label> <br>
+		{% endfor %}
+		<input type = "submit" value = "Vote">
+	</form>
+
+
+<!-- when somebody selects one of the radio buttons and submits the form, it’ll send the POST data choice=# where # is the choicce ID of the selected choice i.e. the value attribute for the selected radio button
+
+On submitting the form, a POST request is made to vote route in the polls app
+-->
+
+</body>
+</html>

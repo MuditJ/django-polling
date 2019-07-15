@@ -1,6 +1,8 @@
-from django.shortcuts import render
+from django.shortcuts import render,get_object_or_404
 from django.template import loader
-from django.http import HttpResponse
+from django.http import HttpResponse, Http404, HttpResponseRedirect
+from django.urls import reverse
+
 from .models import Choice, Question
 # Create your views here.
 
@@ -29,10 +31,35 @@ def index(request):
 #The views need to be registered to a route in the URLConf (app level urls.py)
 
 def detail(request,question_id):
-	return HttpResponse(f"You're looking at question {question_id}")
+	#return HttpResponse(f"You're looking at question {question_id}:")
+	#Make DB call to fetch the question with given id
+	
+	try:
+		question = Question.objects.get(id = question_id)		
+	except Question.DoesNotExist:
+		raise Http404("Question doesnt exist")
+	else:
+		#return HttpResponse(f"You're looking at question {question_id}: {question.question_text}")
+		return render(request,'polls/detail.html',{'question' : question})
+	#A shortcut for this routine of "Fetch an object from DB and return it or return a 404 if object doesnt exist"
+	#is to use the get_object_or_404 function
+
 
 def results(request,question_id):
-	return HttpResponse(f"Results of the question {question_id}")
+	#return HttpResponse(f"Results of the question {question_id}")
+	question = get_object_or_404(Question,pk = question_id)
+	return render(request,'polls/results.html',{'question' : question})
 
-def vote(request,question_id):
-	return HttpResponse(f"Voting on the question {question_id}")
+def vote(request,question_id): #A POST request comes in to the corresponding route
+	#return HttpResponse(f"Voting on the question {question_id}")
+	question = get_object_or_404(Question,pk = question_id)
+	try:
+		selected_choice = question.choice_set.get(pk = request.POST['choice'])
+	except (KeyError,Choice.DoesNotExist):
+		#Redisplay the question voting form
+		return render(request,'polls/detail.html',{'question':question,
+			'error_message':'You didnt select a choice'})
+	else:
+		selected_choice.votes += 1
+		selected_choice.save() #Update the value in DB
+		return HttpResponseRedirect(reverse('polls:resultwa',args=(question.id,)))
