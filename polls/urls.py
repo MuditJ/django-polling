@@ -13,7 +13,12 @@ path('', views.index, name = 'index'),
 path('<int:question_id>/', views.detail, name = 'detail'),
 path('<int:question_id>/results/', views.results, name = 'resultwa'),
 path('<int:question_id>/vote/',views.vote, name = 'vote'),
+path('chart/<int:question_id>/',views.plot_chart,name = 'chart'),
+path('data/',views.return_data, name = 'json-data'),
+path('ajax/',views.sample_ajax, name = 'sample-ajax'),
+path('api/data/<int:question_id>/',views.return_chart_data, name = 'get-chart-data'),
 ]
+
 #The name argument serves as an alias for the route url so that when 
 #a url has to be written in a template, it doesnt need to be hard-coded
 #i.e. we wont need to write: path/<arg>/ but can just use the value of

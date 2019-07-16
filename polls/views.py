@@ -1,6 +1,10 @@
+from django.http import HttpResponse, Http404, HttpResponseRedirect,JsonResponse
+
+from django.core import serializers
+#The serialization framework is to serialize Django models/model objects
+
 from django.shortcuts import render,get_object_or_404
 from django.template import loader
-from django.http import HttpResponse, Http404, HttpResponseRedirect
 from django.urls import reverse
 
 from .models import Choice, Question
@@ -62,4 +66,29 @@ def vote(request,question_id): #A POST request comes in to the corresponding rou
 	else:
 		selected_choice.votes += 1
 		selected_choice.save() #Update the value in DB
-		return HttpResponseRedirect(reverse('polls:resultwa',args=(question.id,)))
+		return HttpResponseRedirect(reverse('polls:index'))
+
+def plot_chart(request,question_id):
+	return render(request,'polls/graphresult.html',{'q' : question_id})
+
+def return_chart_data(request,question_id):
+	question = Question.objects.get(pk = question_id)
+	choices = question.choice_set.all()
+	choice_data = {c.choice_text : c.votes for c in choices}
+	return JsonResponse({"question": question.question_text,"choices" : choice_data})
+
+
+#Sample routes for making AJAX call and getting back some data:
+
+def return_data(request):
+	#return JSON data for use by an AJAX call
+	data = {'name':'Mudit','age':22}
+	#serialized_data = serializers.serialize('json',data)
+	#print(type(serialized_data))
+	#return serialized_data
+	return JsonResponse(data)
+
+def sample_ajax(request):
+	#This view function simply renders a template which makes an 
+	#AJAX call to another route to get some JSON data
+	return render(request,'polls/simple_ajax.html',{})

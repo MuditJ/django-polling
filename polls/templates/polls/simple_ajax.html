@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title></title>
+</head>
+<body>
+	<p id = "content-holder"> </p>
+	<script>
+		var httpreq = new XMLHttpRequest();
+		httpreq.onreadystatechange = function() {
+			if (httpreq.readyState == XMLHttpRequest.DONE) {
+				if (httpreq.status == 200) {
+					var data = JSON.parse(httpreq.responseText)
+					console.log(data);
+					document.getElementById("content-holder").innerHTML = "Name is: " + data.name + " and age is: " + data.age;
+				} else
+				document.getElementById("content-holder").innerHTML = "No reply."
+			}
+		}
+		httpreq.open('GET','http://localhost:8000/polls/data');
+		httpreq.send();
+	</script>
+
+</body>
+</html>

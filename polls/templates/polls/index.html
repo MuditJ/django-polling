@@ -6,8 +6,12 @@
 <body>
 	{% if latest_questions %}
 		<ul>
-			{% for question in latest_questions %}
-				<li> <a href = "{% url 'polls:detail' question.id %}"> {{ question.question_text }} </a> </li>
+			{% for question in latest_questions %} 
+				{{ question.question_text }} <br> 
+				<li> <a href = "{% url 'polls:detail' question.id %}"> Vote !</a> </li>  
+
+				<li> <a href = "{% url 'polls:chart' question.id %}"> View current results! </a> </li>	
+				<br>
 			{% endfor %}
 		</ul>
 	{% else %}

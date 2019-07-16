@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title></title>
+</head>
+<body>
+	<canvas id = "myChart"> </canvas>
+	<script src = "https://cdn.jsdelivr.net/npm/chart.js@2.8.0"> </script>
+
+	<!-- Making the AJAX call -->
+	<script type = "text/javascript">
+		var http = new XMLHttpRequest();
+		var result;
+		http.onreadystatechange = function() {
+			if (http.readyState == XMLHttpRequest.DONE) {
+				if (http.status == 200) {
+					var data = JSON.parse(http.responseText)
+					result = true;
+				}
+				else
+					result = false;
+			}
+			else
+				result = false
+		}
+		console.log(http.readyState)
+		http.open('GET','http://localhost:8000/polls/api/data/{{ q }}');
+		http.send();
+
+		if (result == false) {
+			console.log(http.status)
+			console.log(http.readyState)
+			var p = document.createElement("p")
+			p.innerHTML = "Unable to render graph"
+			var link = document.createElement("a")
+			link.setAttribute('href',"{% url 'polls:index' %}")
+			link.innerHTML = "Go to index page"
+			p.appendChild(link)
+			document.body.appendChild(p)
+		}
+		else {
+			var ctx = document.getElementById('myChart').getContext('2d');
+			var chart = new Chart(ctx, {
+    // The type of chart we want to create
+    type: 'bar',
+
+    // The data for our dataset
+    data: {
+        labels: Object.keys(data.choices),
+        datasets: [{
+            label: data.question,
+            backgroundColor: 'rgb(255, 99, 132)',
+            borderColor: 'rgb(255, 99, 132)',
+            data: Object.values(data.choices)
+        }]
+    },
+
+    // Configuration options go here
+    options: {}
+});
+
+		}
+
+	</script>
+
+</body>
+</html>
